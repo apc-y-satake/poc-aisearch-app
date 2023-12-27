@@ -1,0 +1,145 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "searchServices_poc_aisearch_srch_name": {
+      "defaultValue": "poc-aisearch-srch",
+      "type": "String"
+    },
+    "accounts_poc_aisearch_ai_service_name": {
+      "defaultValue": "poc-aisearch-ai-service",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2023-10-01-preview",
+      "name": "[parameters('accounts_poc_aisearch_ai_service_name')]",
+      "location": "japaneast",
+      "sku": {
+        "name": "S0"
+      },
+      "kind": "OpenAI",
+      "properties": {
+        "customSubDomainName": "[parameters('accounts_poc_aisearch_ai_service_name')]",
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "virtualNetworkRules": [],
+          "ipRules": []
+        },
+        "publicNetworkAccess": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2023-11-01",
+      "name": "[parameters('searchServices_poc_aisearch_srch_name')]",
+      "location": "Japan East",
+      "sku": {
+        "name": "free"
+      },
+      "properties": {
+        "replicaCount": 1,
+        "partitionCount": 1,
+        "hostingMode": "Default",
+        "publicNetworkAccess": "Enabled",
+        "networkRuleSet": {
+          "ipRules": []
+        },
+        "encryptionWithCmk": {
+          "enforcement": "Unspecified"
+        },
+        "disableLocalAuth": false,
+        "authOptions": {
+          "apiKeyOnly": {}
+        },
+        "semanticSearch": "disabled"
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2023-10-01-preview",
+      "name": "[concat(parameters('accounts_poc_aisearch_ai_service_name'), '/gpt-35-turbo')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_poc_aisearch_ai_service_name'))]"
+      ],
+      "sku": {
+        "name": "Standard",
+        "capacity": 120
+      },
+      "properties": {
+        "model": {
+          "format": "OpenAI",
+          "name": "gpt-35-turbo",
+          "version": "0613"
+        },
+        "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
+        "currentCapacity": 120,
+        "raiPolicyName": "Microsoft.Default"
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/raiPolicies",
+      "apiVersion": "2023-10-01-preview",
+      "name": "[concat(parameters('accounts_poc_aisearch_ai_service_name'), '/Microsoft.Default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_poc_aisearch_ai_service_name'))]"
+      ],
+      "properties": {
+        "mode": "Blocking",
+        "contentFilters": [
+          {
+            "allowedContentLevel": "Medium",
+            "blocking": true,
+            "enabled": true,
+            "source": "Prompt"
+          },
+          {
+            "allowedContentLevel": "Medium",
+            "blocking": true,
+            "enabled": true,
+            "source": "Completion"
+          },
+          {
+            "allowedContentLevel": "Medium",
+            "blocking": true,
+            "enabled": true,
+            "source": "Prompt"
+          },
+          {
+            "allowedContentLevel": "Medium",
+            "blocking": true,
+            "enabled": true,
+            "source": "Completion"
+          },
+          {
+            "allowedContentLevel": "Medium",
+            "blocking": true,
+            "enabled": true,
+            "source": "Prompt"
+          },
+          {
+            "allowedContentLevel": "Medium",
+            "blocking": true,
+            "enabled": true,
+            "source": "Completion"
+          },
+          {
+            "allowedContentLevel": "Medium",
+            "blocking": true,
+            "enabled": true,
+            "source": "Prompt"
+          },
+          {
+            "allowedContentLevel": "Medium",
+            "blocking": true,
+            "enabled": true,
+            "source": "Completion"
+          }
+        ]
+      }
+    }
+  ]
+}
