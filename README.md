@@ -24,8 +24,8 @@
 - Azure OpenAI Service
 - Azure AI Search
 
-1. Static Web Apps のリソースを作成し、Deploy の設定に先ほどクローンしたリポジトリを設定してください。
-2. Static Web Apps の画面左側メニューの構成から追加をクリックして、アプリケーションの設定の箇所に以下の環境変数を設定します。
+3. Static Web Apps のリソースを作成し、Deploy の設定に先ほどクローンしたリポジトリを設定してください。
+4. Static Web Apps の画面左側メニューの構成から追加をクリックして、アプリケーションの設定の箇所に以下の環境変数を設定します。
 
 ```
 AZURE_OPENAI_API_KEY: Azure OpenAI Service の API キー
